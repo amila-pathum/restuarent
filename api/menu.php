@@ -65,7 +65,8 @@ switch ($method) {
             $input['description'] ?? '',
             $input['price'],
             $input['category'],
-            $input['image_url'] ?? ''
+            $input['image_url'] ?? '',
+            $input['is_available'] ?? 1
         );
 
         if ($result) {

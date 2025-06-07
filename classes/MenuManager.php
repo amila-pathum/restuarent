@@ -56,10 +56,10 @@ class MenuManager {
     }
 
     // Add new menu item (admin only)
-    public function addItem($name, $description, $price, $category, $image_url = '') {
+    public function addItem($name, $description, $price, $category, $image_url = '', $is_available = 1) {
         $query = "INSERT INTO " . $this->table_name . " 
-                  (name, description, price, category, image_url) 
-                  VALUES (:name, :description, :price, :category, :image_url)";
+                  (name, description, price, category, image_url, is_available) 
+                  VALUES (:name, :description, :price, :category, :image_url, :is_available)";
         
         $stmt = $this->conn->prepare($query);
         
@@ -68,6 +68,7 @@ class MenuManager {
         $stmt->bindParam(':price', $price);
         $stmt->bindParam(':category', $category);
         $stmt->bindParam(':image_url', $image_url);
+        $stmt->bindParam(':is_available', $is_available);
         
         return $stmt->execute();
     }

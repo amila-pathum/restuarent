@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Image Upload Debug Test</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .section { margin: 20px 0; padding: 20px; border: 1px solid #ddd; }
+        .preview { max-width: 200px; max-height: 200px; margin: 10px 0; }
+        .debug { background: #f0f0f0; padding: 10px; margin: 10px 0; font-family: monospace; }
+    </style>
+</head>
+<body>
+    <h1>Image Upload Debug Test</h1>
+
+    <div class="section">
+        <h2>Step 1: Upload Image</h2>
+        <input type="file" id="testImageFile" accept="image/*" onchange="handleTestImageUpload(this)">
+        <div id="uploadResult" class="debug"></div>
+        <div id="imagePreview"></div>
+    </div>
+
+    <div class="section">
+        <h2>Step 2: Test Form Submission</h2>
+        <form id="testForm">
+            <label>Item Name:</label><br>
+            <input type="text" name="name" value="Debug Test Item" required><br><br>
+            
+            <label>Price:</label><br>
+            <input type="number" name="price" value="15.99" step="0.01" required><br><br>
+            
+            <label>Category:</label><br>
+            <select name="category" required>
+                <option value="Rice & Curry">Rice & Curry</option>
+            </select><br><br>
+            
+            <label>Image URL:</label><br>
+            <input type="url" id="testImageUrl" name="image_url" placeholder="Will be filled by upload" style="width: 100%;"><br><br>
+            
+            <button type="submit">Test Submit</button>
+        </form>
+        
+        <div id="formResult" class="debug"></div>
+    </div>
+
+    <script>
+        const API_BASE = '../api';
+
+        async function handleTestImageUpload(input) {
+            const file = input.files[0];
+            if (!file) return;
+            
+            const resultDiv = document.getElementById('uploadResult');
+            resultDiv.innerHTML = 'Uploading...';
+            
+            try {
+                const formData = new FormData();
+                formData.append('image', file);
+                
+                const response = await fetch(`${API_BASE}/upload_image.php`, {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                const result = await response.json();
+                
+                resultDiv.innerHTML = `<strong>Upload Response:</strong><br>${JSON.stringify(result, null, 2)}`;
+                
+                if (result.success) {
+                    document.getElementById('testImageUrl').value = result.url;
+                    
+                    // Show preview
+                    const preview = document.getElementById('imagePreview');
+                    preview.innerHTML = `<img src="${result.url}" class="preview" alt="Preview">`;
+                }
+            } catch (error) {
+                resultDiv.innerHTML = `<strong>Upload Error:</strong><br>${error.message}`;
+            }
+        }
+
+        document.getElementById('testForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(this);
+            const itemData = {
+                name: formData.get('name'),
+                price: parseFloat(formData.get('price')),
+                category: formData.get('category'),
+                image_url: formData.get('image_url'),
+                description: 'Debug test item'
+            };
+
+            const resultDiv = document.getElementById('formResult');
+            resultDiv.innerHTML = `<strong>Sending Data:</strong><br>${JSON.stringify(itemData, null, 2)}`;
+            
+            try {
+                // Test with debug endpoint first
+                const debugResponse = await fetch(`${API_BASE}/debug_form.php`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(itemData)
+                });
+                
+                const debugResult = await debugResponse.json();
+                resultDiv.innerHTML += `<br><br><strong>Debug Response:</strong><br>${JSON.stringify(debugResult, null, 2)}`;
+                
+                // Now try actual submission
+                const actualResponse = await fetch(`${API_BASE}/menu.php`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(itemData)
+                });
+                
+                const actualResult = await actualResponse.json();
+                resultDiv.innerHTML += `<br><br><strong>Actual Submit Response:</strong><br>${JSON.stringify(actualResult, null, 2)}`;
+                
+            } catch (error) {
+                resultDiv.innerHTML += `<br><br><strong>Submit Error:</strong><br>${error.message}`;
+            }
+        });
+    </script>
+</body>
+</html>

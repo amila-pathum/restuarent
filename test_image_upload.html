@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image Upload Test</title>
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto; padding: 20px; }
+        .test-section { background: #f5f5f5; padding: 20px; margin: 20px 0; border-radius: 8px; }
+        .form-group { margin-bottom: 15px; }
+        label { display: block; margin-bottom: 5px; font-weight: bold; }
+        input, select, textarea { width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px; }
+        button { background: #007cba; color: white; padding: 10px 20px; border: none; border-radius: 4px; cursor: pointer; }
+        button:hover { background: #005a87; }
+        .result { margin-top: 10px; padding: 10px; background: #e8f5e8; border: 1px solid #4caf50; border-radius: 4px; }
+        .error { background: #ffe8e8; border-color: #f44336; }
+        #imagePreview { max-width: 200px; max-height: 200px; margin-top: 10px; }
+    </style>
+</head>
+<body>
+    <h1>Restaurant Admin - Image Upload Test</h1>
+    
+    <div class="test-section">
+        <h2>Test 1: Image Upload</h2>
+        <div class="form-group">
+            <label>Select Image File:</label>
+            <input type="file" id="imageFile" accept="image/*" onchange="uploadImage()">
+            <img id="imagePreview" style="display: none;">
+        </div>
+        <div id="uploadResult"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>Test 2: Add Menu Item with Uploaded Image</h2>
+        <form id="menuItemForm">
+            <div class="form-group">
+                <label>Item Name:</label>
+                <input type="text" id="itemName" value="Test Menu Item" required>
+            </div>
+            <div class="form-group">
+                <label>Description:</label>
+                <textarea id="itemDescription" required>This is a test menu item to verify image upload functionality.</textarea>
+            </div>
+            <div class="form-group">
+                <label>Price:</label>
+                <input type="number" id="itemPrice" value="12.99" step="0.01" required>
+            </div>
+            <div class="form-group">
+                <label>Category:</label>
+                <select id="itemCategory" required>
+                    <option value="appetizers">Appetizers</option>
+                    <option value="main-course">Main Course</option>
+                    <option value="desserts">Desserts</option>
+                    <option value="beverages">Beverages</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Image URL (This should be automatically filled after upload):</label>
+                <input type="text" id="itemImage" name="image_url" placeholder="https://example.com/image.jpg or uploads/menu-items/image.jpg">
+            </div>
+            <div class="form-group">
+                <label>
+                    <input type="checkbox" id="itemAvailable" checked> Available
+                </label>
+            </div>
+            <button type="button" onclick="saveMenuItem()">Save Menu Item</button>
+        </form>
+        <div id="saveResult"></div>
+    </div>
+
+    <script>
+        async function uploadImage() {
+            const fileInput = document.getElementById('imageFile');
+            const file = fileInput.files[0];
+            const resultDiv = document.getElementById('uploadResult');
+            const preview = document.getElementById('imagePreview');
+            
+            if (!file) return;
+            
+            // Show preview
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                preview.src = e.target.result;
+                preview.style.display = 'block';
+            };
+            reader.readAsDataURL(file);
+            
+            // Upload file
+            const formData = new FormData();
+            formData.append('image', file);
+            
+            try {
+                resultDiv.innerHTML = '<p>Uploading...</p>';
+                
+                const response = await fetch('/restuarent/api/upload_image.php', {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    resultDiv.innerHTML = `<div class="result">✅ Upload successful!<br>Image URL: ${result.image_url}</div>`;
+                    document.getElementById('itemImage').value = result.image_url;
+                } else {
+                    resultDiv.innerHTML = `<div class="result error">❌ Upload failed: ${result.message}</div>`;
+                }
+            } catch (error) {
+                resultDiv.innerHTML = `<div class="result error">❌ Upload error: ${error.message}</div>`;
+            }
+        }
+        
+        async function saveMenuItem() {
+            const resultDiv = document.getElementById('saveResult');
+            
+            const formData = {
+                name: document.getElementById('itemName').value,
+                description: document.getElementById('itemDescription').value,
+                price: parseFloat(document.getElementById('itemPrice').value),
+                category: document.getElementById('itemCategory').value,
+                image_url: document.getElementById('itemImage').value,
+                is_available: document.getElementById('itemAvailable').checked ? 1 : 0
+            };
+            
+            try {
+                resultDiv.innerHTML = '<p>Saving menu item...</p>';
+                
+                const response = await fetch('/restuarent/api/menu.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(formData)
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    resultDiv.innerHTML = `<div class="result">✅ Menu item saved successfully!<br>Item ID: ${result.id}</div>`;
+                } else {
+                    resultDiv.innerHTML = `<div class="result error">❌ Save failed: ${result.message}</div>`;
+                }
+            } catch (error) {
+                resultDiv.innerHTML = `<div class="result error">❌ Save error: ${error.message}</div>`;
+            }
+        }
+    </script>
+</body>
+</html>

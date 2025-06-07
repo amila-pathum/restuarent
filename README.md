@@ -1,63 +1,142 @@
-# Grand Restaurant - Complete Full-Stack Application
+# Grand Restaurant Management System
 
-## 🍽️ MAMP READY - Complete Setup!
+A complete restaurant management system built with PHP and SQLite, featuring menu management, online ordering, reservations, and customer reviews.
 
-This restaurant management system is **fully configured for MAMP** with MySQL database support. 
+## Features
 
-### ⚡ Quick Start (5 minutes):
-1. **Place in MAMP htdocs**: `/Applications/MAMP/htdocs/restuarent/`
-2. **Start MAMP servers** (Apache: 8888, MySQL: 8889)  
-3. **Create database** in phpMyAdmin: `grand_restaurant`
-4. **Import schema**: `database/schema.sql`
-5. **Visit Demo**: http://localhost:8888/restuarent/mamp_demo.html
+- 🍽️ **Menu Management** - Add, edit, and manage restaurant menu items
+- 📅 **Reservation System** - Online table booking with date/time selection
+- 🛒 **Online Ordering** - Customer ordering system with delivery/pickup options
+- ⭐ **Review System** - Customer reviews and ratings with admin approval
+- 👥 **User Management** - Customer accounts and admin panel
+- 📱 **Responsive Design** - Works on desktop, tablet, and mobile devices
 
-### 🎯 MAMP Quick Links:
-- 🚀 **Interactive Demo**: http://localhost:8888/restuarent/mamp_demo.html
-- 🔧 **System Test**: http://localhost:8888/restuarent/api/test_mamp.php
-- 🏠 **Main Website**: http://localhost:8888/restuarent/
-- ⚙️ **Admin Panel**: http://localhost:8888/restuarent/admin/
-- 🗄️ **phpMyAdmin**: http://localhost:8888/phpmyadmin/
+## Quick Setup
 
-### ✅ What's Included:
-- Complete MySQL database integration
-- All APIs working with MAMP
-- Interactive demo with live testing
-- Admin dashboard
-- Comprehensive documentation
-- Automated setup verification
+### Option 1: Using Setup Script (Recommended)
 
-## 🎉 SYSTEM STATUS: FULLY OPERATIONAL!
+1. **Download/Clone the project** to your web server directory
+2. **Run the setup script** in your browser or command line:
+   ```bash
+   php setup.php
+   ```
+   OR visit: `http://localhost/restaurant/setup.php`
 
-This is a **complete, working restaurant management system** with PHP backend, SQLite database, RESTful APIs, admin dashboard, and dynamic frontend integration.
+3. **Start using the system!**
 
-## ✅ What's Working
-- ✅ **Dynamic Menu System** - Real-time loading with categories and search
-- ✅ **Order Management** - Complete cart system with checkout
-- ✅ **Reservation System** - Time slot management with availability checking  
-- ✅ **Review System** - Customer reviews with approval workflow
-- ✅ **Admin Dashboard** - Full management interface
-- ✅ **RESTful APIs** - All endpoints tested and functional
-- ✅ **Database Integration** - SQLite with sample data
-- ✅ **Frontend Integration** - Dynamic JavaScript interactions
+### Option 2: Manual Setup
 
-## 🚀 Quick Start (Ready to Run!)
+1. **Create database** using the schema file:
+   ```bash
+   sqlite3 database/grand_restaurant.db < database/schema.sql
+   ```
 
-### Option 1: Instant Demo (Recommended)
-```bash
-# Navigate to the restaurant directory
-cd /path/to/restaurant
+2. **Set permissions**:
+   ```bash
+   chmod 666 database/grand_restaurant.db
+   chmod 755 database/
+   mkdir -p uploads/menu-items
+   chmod 755 uploads/
+   ```
 
-# Start PHP development server
-php -S localhost:8000
+## System Requirements
 
-# Open in browser:
-http://localhost:8000/demo.html        # System demo
-http://localhost:8000/index.html       # Main website  
-http://localhost:8000/admin/index.html # Admin dashboard
+- **PHP 7.4 or higher**
+- **SQLite3 support** (usually included with PHP)
+- **Web server** (Apache, Nginx, or built-in PHP server)
+- **GD extension** for image handling
+
+## Default Admin Access
+
+- **Username:** `admin`
+- **Password:** `admin123`
+- **Admin Panel:** `http://localhost/restaurant/admin/`
+
+## Project Structure
+
+```
+restuarent/
+├── database/
+│   ├── grand_restaurant.db    # SQLite database file
+│   └── schema.sql            # Database schema
+├── admin/                    # Admin panel files
+├── api/                      # API endpoints
+├── classes/                  # PHP classes
+├── config/                   # Configuration files
+├── css/                      # Stylesheets
+├── js/                       # JavaScript files
+├── images/                   # Static images
+├── uploads/                  # User uploaded files
+└── setup.php                 # Setup script
 ```
 
-### Option 2: Production Setup
-For MySQL instead of SQLite, update the API files to use `database.php` instead of `database_sqlite.php`
+## Configuration
+
+Database configuration is in `config/database_sqlite.php`. The default setup uses SQLite for portability.
+
+## Deployment to Other Computers
+
+1. **Copy the entire project folder**
+2. **Run `php setup.php`** to initialize database
+3. **Configure web server** to point to the project directory
+4. **Access the system** via browser
+
+## Development
+
+### Adding New Features
+
+- **Database changes**: Update `database/schema.sql`
+- **API endpoints**: Add files to `api/` directory
+- **Classes**: Add to `classes/` directory
+- **Frontend**: Update HTML/CSS/JS files
+
+### Database Management
+
+- **View data**: Use SQLite browser or command line
+- **Backup**: Copy `database/grand_restaurant.db`
+- **Reset**: Delete database file and run setup again
+
+## Troubleshooting
+
+### Common Issues
+
+1. **Database permission errors**:
+   ```bash
+   chmod 666 database/grand_restaurant.db
+   chmod 755 database/
+   ```
+
+2. **Image upload issues**:
+   ```bash
+   chmod 755 uploads/
+   chmod 755 uploads/menu-items/
+   ```
+
+3. **PHP SQLite not enabled**:
+   - Ensure `php-sqlite3` extension is installed
+   - Check `phpinfo()` for SQLite support
+
+### File Permissions
+
+```bash
+# Set correct permissions
+find . -type f -name "*.php" -exec chmod 644 {} \;
+find . -type f -name "*.html" -exec chmod 644 {} \;
+find . -type d -exec chmod 755 {} \;
+chmod 666 database/grand_restaurant.db
+```
+
+## Support
+
+For issues or questions:
+1. Check the troubleshooting section above
+2. Verify system requirements
+3. Ensure proper file permissions
+4. Check web server error logs
+
+## License
+
+This project is for educational and commercial use. Modify as needed for your requirements.
 
 ## 💾 Database (SQLite - No Setup Required!)
 - **Location**: `api/database/grand_restaurant.db` 

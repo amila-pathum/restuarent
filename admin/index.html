@@ -755,7 +755,7 @@
                     <div class="form-group">
                         <label for="itemImage">Image</label>
                         <div style="display: flex; gap: 10px; align-items: center;">
-                            <input type="url" id="itemImage" name="image_url" placeholder="https://example.com/image.jpg" style="flex: 1;">
+                            <input type="text" id="itemImage" name="image_url" placeholder="https://example.com/image.jpg or uploads/menu-items/image.jpg" style="flex: 1;">
                             <span style="color: #666;">or</span>
                             <input type="file" id="itemImageFile" accept="image/*" style="flex: 1;" onchange="handleImageUpload(this)">
                         </div>
@@ -1584,12 +1584,18 @@
                 existingPreview.remove();
             }
             
+            // Adjust relative paths for admin panel
+            let displayUrl = imageUrl;
+            if (imageUrl.startsWith('uploads/')) {
+                displayUrl = '../' + imageUrl;
+            }
+            
             // Create new preview
             const preview = document.createElement('div');
             preview.id = 'imagePreview';
             preview.style.marginTop = '10px';
             preview.innerHTML = `
-                <img src="${imageUrl}" alt="Preview" style="max-width: 200px; max-height: 150px; border-radius: 5px; border: 1px solid #ddd;">
+                <img src="${displayUrl}" alt="Preview" style="max-width: 200px; max-height: 150px; border-radius: 5px; border: 1px solid #ddd;" onerror="this.style.display='none'; this.nextElementSibling.textContent='Image could not be loaded';">
                 <div style="font-size: 12px; color: #666; margin-top: 5px;">Image Preview</div>
             `;
             

@@ -1,5 +1,5 @@
 <?php
-require_once '../config/database.php';
+require_once '../config/database_sqlite.php';
 
 setCorsHeaders();
 
@@ -13,20 +13,7 @@ class AdminAuth {
     }
 
     public function login($username, $password) {
-        // For demo purposes, use simple hardcoded credentials
-        // In production, this should check against hashed passwords in database
-        if ($username === 'admin' && $password === 'admin123') {
-            return [
-                'success' => true,
-                'message' => 'Login successful',
-                'user' => [
-                    'username' => $username,
-                    'role' => 'admin'
-                ]
-            ];
-        }
-
-        // Try to check database for additional admin users
+        // Try database authentication first
         try {
             $query = "SELECT * FROM " . $this->table_name . " WHERE username = :username LIMIT 1";
             $stmt = $this->conn->prepare($query);
@@ -46,7 +33,19 @@ class AdminAuth {
                 ];
             }
         } catch (Exception $e) {
-            // If database table doesn't exist, continue with hardcoded check
+            error_log("Database authentication error: " . $e->getMessage());
+        }
+
+        // Fallback to hardcoded credentials for demo/development
+        if ($username === 'admin' && $password === 'admin123') {
+            return [
+                'success' => true,
+                'message' => 'Login successful',
+                'user' => [
+                    'username' => $username,
+                    'role' => 'admin'
+                ]
+            ];
         }
 
         return [
